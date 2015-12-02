@@ -12,13 +12,15 @@ getPosition = (divName) ->
   pubDiv = document.getElementById(divName)
   if !pubDiv then return {}
   computedStyle = if window.getComputedStyle then getComputedStyle(pubDiv, null) else {}
+  transform = new WebKitCSSMatrix(window.getComputedStyle(pubDiv).transform)
   width = pubDiv.offsetWidth
   height = pubDiv.offsetHeight
-  curtop = pubDiv.offsetTop
-  curleft = pubDiv.offsetLeft
+  curtop = pubDiv.offsetTop + transform.m41;
+  curleft = pubDiv.offsetLeft + transform.m42;
   while(pubDiv = pubDiv.offsetParent)
-    curleft += pubDiv.offsetLeft
-    curtop += pubDiv.offsetTop
+    transform = new WebKitCSSMatrix(window.getComputedStyle(pubDiv).transform)
+    curleft += pubDiv.offsetLeft + transform.m41
+    curtop += pubDiv.offsetTop + transform.m42
   marginTop = parseInt(computedStyle.marginTop) || 0
   marginBottom = parseInt(computedStyle.marginBottom) || 0
   marginLeft = parseInt(computedStyle.marginLeft) || 0
@@ -75,7 +77,7 @@ TBUpdateObjects = ()->
     console.log("JS sessionId: " + streamId )
     id = e.id
     position = getPosition(id)
-    Cordova.exec(TBSuccess, TBError, OTPlugin, "updateView", [streamId, position.top, position.left, position.width, position.height, TBGetZIndex(e), ratios.widthRatio, ratios.heightRatio] )
+    Cordova.exec(TBSuccess, TBError, OTPlugin, "updateView", [streamId, position.top, position.left, position.width, position.height, TBGetZIndex(e), ratios.widthRatio, ratios.heightRatio, TBGetBorderRadius(e)] )
   return
 TBGenerateDomHelper = ->
   domId = "PubSub" + Date.now()
@@ -99,6 +101,17 @@ TBGetScreenRatios = ()->
         widthRatio: window.outerWidth / window.innerWidth,
         heightRatio: window.outerHeight / window.innerHeight
     }
+
+TBGetBorderRadius = (ele) ->
+  while( ele? )
+    val = document.defaultView.getComputedStyle(ele,null).getPropertyValue('border-radius')
+    if (val && (val.length > 1) && (val != '0px'))
+      if (val.indexOf('%') == (val.length - 1))
+        return Math.round(ele.offsetWidth * (parseFloat(val.substring(0, val.length - 1)) / 100))
+      else if (val.indexOf('px') == (val.length - 2))
+        return parseInt(val.substring(0, val.length - 2))
+    ele = ele.offsetParent
+  return 0
 
 pdebug = (msg, data) ->
   console.log "JS Lib: #{msg} - ", data

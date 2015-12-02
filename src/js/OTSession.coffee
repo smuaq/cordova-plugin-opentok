@@ -67,7 +67,8 @@ class TBSession
     @subscriberCallbacks = {}
     if( four? )
       # stream,domId, properties, completionHandler
-      subscriber = new TBSubscriber(one, two, three)
+      domId = two || TBGenerateDomHelper()
+      subscriber = new TBSubscriber(one, domId, three)
       @subscriberCallbacks[one.streamId] = four
       return subscriber
     if( three? )
@@ -115,15 +116,14 @@ class TBSession
     return Cordova.exec(TBSuccess, TBError, OTPlugin, "unpublish", [] )
   unsubscribe: (subscriber) ->
     console.log("JS: Unsubscribe")
-    elementId = subscriber.streamId
-    element = document.getElementById( "TBStreamConnection#{elementId}" )
+    streamId = subscriber.streamId
+    element = subscriber.element || document.getElementById( "TBStreamConnection#{streamId}" )
     console.log("JS: Unsubscribing")
-    element = streamElements[ elementId ]
     if(element)
       element.parentNode.removeChild(element)
       delete( streamElements[ streamId ] )
       TBUpdateObjects()
-    return Cordova.exec(TBSuccess, TBError, OTPlugin, "unsubscribe", [subscriber.streamId] )
+    return Cordova.exec(TBSuccess, TBError, OTPlugin, "unsubscribe", [streamId] )
 
   constructor: (@apiKey, @sessionId) ->
     @apiKey = @apiKey.toString()

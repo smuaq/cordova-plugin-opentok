@@ -72,6 +72,7 @@
     int width = [[command.arguments objectAtIndex:3] intValue];
     int height = [[command.arguments objectAtIndex:4] intValue];
     int zIndex = [[command.arguments objectAtIndex:5] intValue];
+    int borderRadius = [[command.arguments objectAtIndex:8] intValue];
     
     NSString* publishAudio = [command.arguments objectAtIndex:6];
     if ([publishAudio isEqualToString:@"false"]) {
@@ -95,6 +96,8 @@
     if ([cameraPosition isEqualToString:@"back"]) {
         _publisher.cameraPosition = AVCaptureDevicePositionBack;
     }
+    _publisher.view.layer.cornerRadius = borderRadius;
+    _publisher.view.clipsToBounds = borderRadius ? YES : NO;
     
     // Return to Javascript
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -109,21 +112,26 @@
     int width = [[command.arguments objectAtIndex:3] intValue];
     int height = [[command.arguments objectAtIndex:4] intValue];
     int zIndex = [[command.arguments objectAtIndex:5] intValue];
+    int borderRadius = [[command.arguments objectAtIndex:8] intValue];
     if ([sid isEqualToString:@"TBPublisher"]) {
         NSLog(@"The Width is: %d", width);
         _publisher.view.frame = CGRectMake(left, top, width, height);
         _publisher.view.layer.zPosition = zIndex;
+        _publisher.view.layer.cornerRadius = borderRadius;
+        _publisher.view.clipsToBounds = borderRadius ? YES : NO;
     }
-    
+
     // Pulls the subscriber object from dictionary to prepare it for update
     OTSubscriber* streamInfo = [subscriberDictionary objectForKey:sid];
-    
+
     if (streamInfo) {
         // Reposition the video feeds!
         streamInfo.view.frame = CGRectMake(left, top, width, height);
         streamInfo.view.layer.zPosition = zIndex;
+        streamInfo.view.layer.cornerRadius = borderRadius;
+        streamInfo.view.clipsToBounds = borderRadius ? YES : NO;
     }
-    
+
     CDVPluginResult* callbackResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [callbackResult setKeepCallbackAsBool:YES];
     //[self.commandDelegate sendPluginResult:callbackResult toSuccessCallbackString:command.callbackId];
@@ -218,6 +226,7 @@
     int width = [[command.arguments objectAtIndex:3] intValue];
     int height = [[command.arguments objectAtIndex:4] intValue];
     int zIndex = [[command.arguments objectAtIndex:5] intValue];
+    int borderRadius = [[command.arguments objectAtIndex:8] intValue];
     
     // Acquire Stream, then create a subscriber object and put it into dictionary
     OTStream* myStream = [streamDictionary objectForKey:sid];
@@ -236,6 +245,8 @@
     if (zIndex>0) {
         sub.view.layer.zPosition = zIndex;
     }
+    sub.view.layer.cornerRadius = borderRadius;
+    sub.view.clipsToBounds = borderRadius ? YES : NO;
     [self.webView.superview addSubview:sub.view];
     
     // Return to JS event handler
