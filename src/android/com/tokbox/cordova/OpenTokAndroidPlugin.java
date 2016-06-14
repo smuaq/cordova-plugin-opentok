@@ -24,6 +24,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.util.DisplayMetrics;
+import com.opentok.android.BaseVideoRenderer;
+
 import com.opentok.android.Connection;
 import com.opentok.android.OpentokError;
 import com.opentok.android.Publisher;
@@ -114,8 +117,15 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
               ratioIndex = 9;
           }
 
-          widthRatio = (float) mProperty.getDouble(ratioIndex);
-          heightRatio = (float) mProperty.getDouble(ratioIndex + 1);
+
+          DisplayMetrics metrics = new DisplayMetrics();
+          cordova.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+          widthRatio = (float) mProperty.getDouble(ratioIndex) * metrics.density;
+          heightRatio = (float) mProperty.getDouble(ratioIndex + 1) * metrics.density;
+
+          //widthRatio = (float) mProperty.getDouble(ratioIndex);
+          //heightRatio = (float) mProperty.getDouble(ratioIndex + 1);
 
           mView.setY( mProperty.getInt(1) * heightRatio );
           mView.setX( mProperty.getInt(2) * widthRatio );
@@ -175,6 +185,8 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
         }
 
         mPublisher = new Publisher(cordova.getActivity().getApplicationContext(), publisherName);
+        mPublisher.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
+
         mPublisher.setCameraListener(this);
         mPublisher.setPublisherListener(this);
         try{
@@ -264,6 +276,7 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
       if( mSubscriber == null ){
         logMessage("NEW SUBSCRIBER BEING CREATED");
         mSubscriber = new Subscriber(cordova.getActivity(), mStream);
+        mSubscriber.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
         mSubscriber.setVideoListener(this);
         mSubscriber.setSubscriberListener(this);
         ViewGroup frame = (ViewGroup) cordova.getActivity().findViewById(android.R.id.content);
