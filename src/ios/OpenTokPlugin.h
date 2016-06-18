@@ -37,11 +37,7 @@
 - (void)subscribe:(CDVInvokedUrlCommand*)command;
 - (void)unsubscribe:(CDVInvokedUrlCommand*)command;
 
-
 // HouseKeeping
-
-
-
-- (void)TBTesting:(CDVInvokedUrlCommand*)command;
+//- (void)TBTesting:(CDVInvokedUrlCommand*)command;
 
 @end

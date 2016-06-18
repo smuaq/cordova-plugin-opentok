@@ -102,7 +102,7 @@
 }
 // Helper function to update Views
 - (void)updateView:(CDVInvokedUrlCommand*)command{
-    NSString* callback = command.callbackId;
+    //NSString* callback = command.callbackId;
     NSString* sid = [command.arguments objectAtIndex:0];
     int top = [[command.arguments objectAtIndex:1] intValue];
     int left = [[command.arguments objectAtIndex:2] intValue];
@@ -368,7 +368,7 @@
 - (void)session:(OTSession*)session didFailWithError:(OTError*)error {
     NSLog(@"Error: Session did not Connect");
     NSLog(@"Error: %@", error);
-    NSNumber* code = [NSNumber numberWithInt:[error code]];
+    NSNumber* code = [NSNumber numberWithInteger:[error code]];
     NSMutableDictionary* err = [[NSMutableDictionary alloc] init];
     [err setObject:error.localizedDescription forKey:@"message"];
     [err setObject:code forKey:@"code"];
