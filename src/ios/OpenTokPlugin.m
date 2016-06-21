@@ -23,6 +23,11 @@
 #pragma mark Cordova Methods
 -(void) pluginInitialize{
     callbackList = [[NSMutableDictionary alloc] init];
+    NSLog(@"Setting webview to transparent");
+    // TODO this should be configurable, whether to put native views behind or in front of webview
+    self.webView.opaque = NO;
+    self.webView.backgroundColor = [UIColor clearColor];
+    self.webView.layer.zPosition = 1000;
 }
 - (void)addEvent:(CDVInvokedUrlCommand*)command{
     NSString* event = [command.arguments objectAtIndex:0];
@@ -45,15 +50,15 @@
     // Get Parameters
     NSString* apiKey = [command.arguments objectAtIndex:0];
     NSString* sessionId = [command.arguments objectAtIndex:1];
-    
+
     // Create Session
     _session = [[OTSession alloc] initWithApiKey: apiKey sessionId:sessionId delegate:self];
-    
+
     // Initialize Dictionary, contains DOM info for every stream
     subscriberDictionary = [[NSMutableDictionary alloc] init];
     streamDictionary = [[NSMutableDictionary alloc] init];
     connectionDictionary = [[NSMutableDictionary alloc] init];
-    
+
     // Return Result
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -64,7 +69,7 @@
     NSLog(@"iOS creating Publisher");
     BOOL bpubAudio = YES;
     BOOL bpubVideo = YES;
-    
+
     // Get Parameters
     NSString* name = [command.arguments objectAtIndex:0];
     int top = [[command.arguments objectAtIndex:1] intValue];
@@ -72,7 +77,7 @@
     int width = [[command.arguments objectAtIndex:3] intValue];
     int height = [[command.arguments objectAtIndex:4] intValue];
     int zIndex = [[command.arguments objectAtIndex:5] intValue];
-    
+
     NSString* publishAudio = [command.arguments objectAtIndex:6];
     if ([publishAudio isEqualToString:@"false"]) {
         bpubAudio = NO;
@@ -81,12 +86,14 @@
     if ([publishVideo isEqualToString:@"false"]) {
         bpubVideo = NO;
     }
-    
+
     // Publish and set View
     _publisher = [[OTPublisher alloc] initWithDelegate:self name:name];
     [_publisher setPublishAudio:bpubAudio];
     [_publisher setPublishVideo:bpubVideo];
-    [self.webView.superview addSubview:_publisher.view];
+    // TODO make configurable
+    [self.webView.superview insertSubview:_publisher.view belowSubview:self.webView];
+    //    [self.webView.superview addSubview:_publisher.view];
     [_publisher.view setFrame:CGRectMake(left, top, width, height)];
     if (zIndex>0) {
         _publisher.view.layer.zPosition = zIndex;
@@ -95,14 +102,14 @@
     if ([cameraPosition isEqualToString:@"back"]) {
         _publisher.cameraPosition = AVCaptureDevicePositionBack;
     }
-    
+
     // Return to Javascript
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 // Helper function to update Views
 - (void)updateView:(CDVInvokedUrlCommand*)command{
-    //NSString* callback = command.callbackId;
+    NSString* callback = command.callbackId;
     NSString* sid = [command.arguments objectAtIndex:0];
     int top = [[command.arguments objectAtIndex:1] intValue];
     int left = [[command.arguments objectAtIndex:2] intValue];
@@ -114,16 +121,16 @@
         _publisher.view.frame = CGRectMake(left, top, width, height);
         _publisher.view.layer.zPosition = zIndex;
     }
-    
+
     // Pulls the subscriber object from dictionary to prepare it for update
     OTSubscriber* streamInfo = [subscriberDictionary objectForKey:sid];
-    
+
     if (streamInfo) {
         // Reposition the video feeds!
         streamInfo.view.frame = CGRectMake(left, top, width, height);
         streamInfo.view.layer.zPosition = zIndex;
     }
-    
+
     CDVPluginResult* callbackResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [callbackResult setKeepCallbackAsBool:YES];
     //[self.commandDelegate sendPluginResult:callbackResult toSuccessCallbackString:command.callbackId];
@@ -152,7 +159,7 @@
 - (void)setCameraPosition:(CDVInvokedUrlCommand*)command{
     NSString* publishCameraPosition = [command.arguments objectAtIndex:0];
     NSLog(@"iOS Altering Video camera position, %@", publishCameraPosition);
-    
+
     if ([publishCameraPosition isEqualToString:@"back"]) {
         [_publisher setCameraPosition:AVCaptureDevicePositionBack];
     } else if ([publishCameraPosition isEqualToString:@"front"]) {
@@ -163,12 +170,12 @@
     NSLog(@"iOS Destroying Publisher");
     // Unpublish publisher
     [_session unpublish:_publisher error:nil];
-    
+
     // Remove publisher view
     if (_publisher) {
         [_publisher.view removeFromSuperview];
     }
-    
+
     // Return to Javascript
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -178,7 +185,7 @@
 #pragma mark Session Methods
 - (void)connect:(CDVInvokedUrlCommand *)command{
     NSLog(@"iOS Connecting to Session");
-    
+
     // Get Parameters
     NSString* tbToken = [command.arguments objectAtIndex:0];
     [_session connectWithToken:tbToken error:nil];
@@ -193,7 +200,7 @@
 - (void)publish:(CDVInvokedUrlCommand*)command{
     NSLog(@"iOS Publish stream to session");
     [_session publish:_publisher error:nil];
-    
+
     // Return to Javascript
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -208,22 +215,22 @@
 // Called by session.subscribe(streamId, top, left)
 - (void)subscribe:(CDVInvokedUrlCommand*)command{
     NSLog(@"iOS subscribing to stream");
-    
+
     // Get Parameters
     NSString* sid = [command.arguments objectAtIndex:0];
-    
-    
+
+
     int top = [[command.arguments objectAtIndex:1] intValue];
     int left = [[command.arguments objectAtIndex:2] intValue];
     int width = [[command.arguments objectAtIndex:3] intValue];
     int height = [[command.arguments objectAtIndex:4] intValue];
     int zIndex = [[command.arguments objectAtIndex:5] intValue];
-    
+
     // Acquire Stream, then create a subscriber object and put it into dictionary
     OTStream* myStream = [streamDictionary objectForKey:sid];
     OTSubscriber* sub = [[OTSubscriber alloc] initWithStream:myStream delegate:self];
     [_session subscribe:sub error:nil];
-    
+
     if ([[command.arguments objectAtIndex:6] isEqualToString:@"false"]) {
         [sub setSubscribeToAudio: NO];
     }
@@ -231,13 +238,15 @@
         [sub setSubscribeToVideo: NO];
     }
     [subscriberDictionary setObject:sub forKey:myStream.streamId];
-    
+
     [sub.view setFrame:CGRectMake(left, top, width, height)];
     if (zIndex>0) {
-        sub.view.layer.zPosition = zIndex;
+        sub.view.layer.zPosition = -1;
     }
-    [self.webView.superview addSubview:sub.view];
-    
+    // TODO make configurable
+    [self.webView.superview insertSubview:sub.view belowSubview:self.webView];
+    //    [self.webView.superview addSubview:sub.view];
+
     // Return to JS event handler
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -274,7 +283,7 @@
     NSString* streamId = sub.stream.streamId;
     [eventData setObject:streamId forKey:@"streamId"];
     [self triggerJSEvent: @"sessionEvents" withType: @"subscribedToStream" withData: eventData];
-    
+
 }
 - (void)subscriber:(OTSubscriber*)subscrib didFailWithError:(OTError*)error{
     NSLog(@"subscriber didFailWithError %@", error);
@@ -290,9 +299,9 @@
 #pragma mark Session Delegates
 - (void)sessionDidConnect:(OTSession*)session{
     NSLog(@"iOS Connected to Session");
-    
+
     NSMutableDictionary* sessionDict = [[NSMutableDictionary alloc] init];
-    
+
     // SessionConnectionStatus
     NSString* connectionStatus = @"";
     if (session.sessionConnectionStatus==OTSessionConnectionStatusConnected) {
@@ -305,28 +314,28 @@
         connectionStatus = @"OTSessionConnectionStatusFailed";
     }
     [sessionDict setObject:connectionStatus forKey:@"sessionConnectionStatus"];
-    
+
     // SessionId
     [sessionDict setObject:session.sessionId forKey:@"sessionId"];
-    
+
     [connectionDictionary setObject: session.connection forKey: session.connection.connectionId];
-    
-    
+
+
     // After session is successfully connected, the connection property is available
     NSMutableDictionary* eventData = [[NSMutableDictionary alloc] init];
     [eventData setObject:@"status" forKey:@"connected"];
     NSMutableDictionary* connectionData = [self createDataFromConnection: session.connection];
     [eventData setObject: connectionData forKey: @"connection"];
-    
-    
+
+
     NSLog(@"object for session is %@", sessionDict);
-    
+
     // After session dictionary is constructed, return the result!
     //    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:sessionDict];
     //    NSString* sessionConnectCallback = [callbackList objectForKey:@"sessSessionConnected"];
     //    [self.commandDelegate sendPluginResult:pluginResult callbackId:sessionConnectCallback];
-    
-    
+
+
     [self triggerJSEvent: @"sessionEvents" withType: @"sessionConnected" withData: eventData];
 }
 
@@ -355,7 +364,7 @@
 }
 - (void)session:(OTSession*)session streamDestroyed:(OTStream *)stream{
     NSLog(@"iOS Drop Stream");
-    
+
     OTSubscriber * subscriber = [subscriberDictionary objectForKey:stream.streamId];
     if (subscriber) {
         NSLog(@"subscriber found, unsubscribing");
@@ -368,11 +377,11 @@
 - (void)session:(OTSession*)session didFailWithError:(OTError*)error {
     NSLog(@"Error: Session did not Connect");
     NSLog(@"Error: %@", error);
-    NSNumber* code = [NSNumber numberWithInteger:[error code]];
+    NSNumber* code = [NSNumber numberWithInt:[error code]];
     NSMutableDictionary* err = [[NSMutableDictionary alloc] init];
     [err setObject:error.localizedDescription forKey:@"message"];
     [err setObject:code forKey:@"code"];
-    
+
     if (self.exceptionId) {
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: err];
         [pluginResult setKeepCallbackAsBool:YES];
@@ -382,7 +391,7 @@
 - (void)sessionDidDisconnect:(OTSession*)session{
     NSString* alertMessage = [NSString stringWithFormat:@"Session disconnected: (%@)", session.sessionId];
     NSLog(@"sessionDidDisconnect (%@)", alertMessage);
-    
+
     // Setting up event object
     for ( id key in subscriberDictionary ) {
         OTSubscriber* aStream = [subscriberDictionary objectForKey:key];
@@ -392,14 +401,14 @@
     if( _publisher ){
         [_publisher.view removeFromSuperview];
     }
-    
+
     // Setting up event object
     NSMutableDictionary* eventData = [[NSMutableDictionary alloc] init];
     [eventData setObject:@"clientDisconnected" forKey:@"reason"];
     [self triggerJSEvent: @"sessionEvents" withType: @"sessionDisconnected" withData: eventData];
 }
 -(void) session:(OTSession *)session receivedSignalType:(NSString *)type fromConnection:(OTConnection *)connection withString:(NSString *)string{
-    
+
     NSLog(@"iOS Session Received signal from Connection: %@ with id %@", connection, [connection connectionId]);
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     [data setObject: type forKey: @"type"];
@@ -423,7 +432,7 @@
     NSLog(@"iOS Publisher didFailWithError");
     NSMutableDictionary* err = [[NSMutableDictionary alloc] init];
     [err setObject:error.localizedDescription forKey:@"message"];
-    
+
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: err];
     [pluginResult setKeepCallbackAsBool:YES];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:self.exceptionId];
@@ -439,7 +448,7 @@
 }
 - (void)triggerStreamDestroyed: (OTStream*) stream withEventType: (NSString*) eventType{
     [streamDictionary removeObjectForKey: stream.streamId];
-    
+
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* streamData = [self createDataFromStream: stream];
     [data setObject: streamData forKey: @"stream"];
@@ -470,10 +479,10 @@
     NSMutableDictionary* message = [[NSMutableDictionary alloc] init];
     [message setObject:type forKey:@"eventType"];
     [message setObject:data forKey:@"data"];
-    
+
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:message];
     [pluginResult setKeepCallbackAsBool:YES];
-    
+
     NSString* callbackId = [callbackList objectForKey:event];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }
@@ -481,20 +490,19 @@
 
 
 /***** Notes
- 
- 
+
+
  NSString *stringObtainedFromJavascript = [command.arguments objectAtIndex:0];
  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: stringObtainedFromJavascript];
- 
+
  if(YES){
  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackID]];
  }else{
  //Call  the Failure Javascript function
  [self.commandDelegate [pluginResult toErrorCallbackString:self.callbackID]];
  }
- 
+
  ******/
 
 
 @end
-
