@@ -27,7 +27,7 @@
     // TODO this should be configurable, whether to put native views behind or in front of webview
     self.webView.opaque = NO;
     self.webView.backgroundColor = [UIColor clearColor];
-    self.webView.layer.zPosition = 1000;
+    self.webView.layer.zPosition = 10;
 }
 - (void)addEvent:(CDVInvokedUrlCommand*)command{
     NSString* event = [command.arguments objectAtIndex:0];
@@ -96,7 +96,7 @@
     //    [self.webView.superview addSubview:_publisher.view];
     [_publisher.view setFrame:CGRectMake(left, top, width, height)];
     if (zIndex>0) {
-        _publisher.view.layer.zPosition = zIndex;
+        _publisher.view.layer.zPosition = 1;
     }
     NSString* cameraPosition = [command.arguments objectAtIndex:8];
     if ([cameraPosition isEqualToString:@"back"]) {
@@ -119,7 +119,7 @@
     if ([sid isEqualToString:@"TBPublisher"]) {
         NSLog(@"The Width is: %d", width);
         _publisher.view.frame = CGRectMake(left, top, width, height);
-        _publisher.view.layer.zPosition = zIndex;
+        _publisher.view.layer.zPosition = 1;
     }
 
     // Pulls the subscriber object from dictionary to prepare it for update
@@ -128,7 +128,7 @@
     if (streamInfo) {
         // Reposition the video feeds!
         streamInfo.view.frame = CGRectMake(left, top, width, height);
-        streamInfo.view.layer.zPosition = zIndex;
+        streamInfo.view.layer.zPosition = -1;
     }
 
     CDVPluginResult* callbackResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
