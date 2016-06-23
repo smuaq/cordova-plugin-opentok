@@ -220,6 +220,7 @@ replaceWithVideoStream = function (divName, streamId, properties) {
     videoElement = document.createElement("video");
     videoElement.style.width = "100%";
     videoElement.style.height = "100%";
+    videoElement.style.visibility = "hidden";
     internalDiv.appendChild(videoElement);
     element.appendChild(internalDiv);
     return element;
