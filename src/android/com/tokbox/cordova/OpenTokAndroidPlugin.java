@@ -425,11 +425,21 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
       }else if( action.equals( "setCameraPosition")){
         String cameraId = args.getString(0);
         if (cameraId.equals("front")){
+      cordova.getThreadPool().execute(new Runnable() {
+        public void run() {
           myPublisher.mPublisher.setCameraId(1);
-        } else if(cameraId.equals("back")){
+        }
+      });
+      }
+      else if(cameraId.equals("back")){
+      cordova.getThreadPool().execute(new Runnable() {
+        public void run() {
           myPublisher.mPublisher.setCameraId(0);
         }
-      }else if( action.equals( "publishAudio") ){
+      });
+        }
+      }
+      else if( action.equals( "publishAudio") ){
         String val = args.getString(0);
         boolean publishAudio = true;
         if( val.equalsIgnoreCase("false") ){
