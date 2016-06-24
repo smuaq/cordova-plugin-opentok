@@ -421,40 +421,67 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
         mSession.setSignalListener(this);
         mSession.setStreamPropertiesListener(this);
 
-      // publisher methods
-      }else if( action.equals( "setCameraPosition")){
-        String cameraId = args.getString(0);
-        if (cameraId.equals("front")){
-      cordova.getThreadPool().execute(new Runnable() {
-        public void run() {
-          myPublisher.mPublisher.setCameraId(1);
-        }
-      });
-      }
-      else if(cameraId.equals("back")){
-      cordova.getThreadPool().execute(new Runnable() {
-        public void run() {
-          myPublisher.mPublisher.setCameraId(0);
-        }
-      });
-        }
-      }
-      else if( action.equals( "publishAudio") ){
+     // publisher methods
+           }else if( action.equals( "setCameraPosition")){
+             String cameraId = args.getString(0);
+             if (cameraId.equals("front")){
+
+             cordova.getThreadPool().execute(new Runnable() {
+                     public void run() {
+                       myPublisher.mPublisher.setCameraId(1);
+                     }
+                   });
+
+             } else if(cameraId.equals("back")){
+
+             cordova.getThreadPool().execute(new Runnable() {
+                     public void run() {
+                       myPublisher.mPublisher.setCameraId(0);
+                     }
+                           });
+             }
+      }else if( action.equals( "publishAudio") ){
         String val = args.getString(0);
         boolean publishAudio = true;
         if( val.equalsIgnoreCase("false") ){
           publishAudio = false;
+          cordova.getThreadPool().execute(new Runnable() {
+           public void run() {
+             myPublisher.mPublisher.setPublishAudio(false);
+           }
+         });
+        }
+        else if(val.equalsIgnoreCase("true")){
+        cordova.getThreadPool().execute(new Runnable() {
+         public void run() {
+           myPublisher.mPublisher.setPublishAudio(true);
+         }
+       });
         }
         Log.i(TAG, "setting publishAudio");
-        myPublisher.mPublisher.setPublishAudio( publishAudio );
+
       }else if( action.equals( "publishVideo") ){
         String val = args.getString(0);
-        boolean publishVideo = true;
+         boolean publishVideo = true;
         if( val.equalsIgnoreCase("false") ){
           publishVideo = false;
+
+          cordova.getThreadPool().execute(new Runnable() {
+             public void run() {
+               myPublisher.mPublisher.setPublishVideo( false );
+             }
+           });
+
+        }
+        else if(val.equalsIgnoreCase("true")){
+        cordova.getThreadPool().execute(new Runnable() {
+           public void run() {
+             myPublisher.mPublisher.setPublishVideo( true );
+           }
+         });
+
         }
         Log.i(TAG, "setting publishVideo");
-        myPublisher.mPublisher.setPublishVideo( publishVideo );
 
       // session Methods
       }else if( action.equals( "addEvent" )){
@@ -490,9 +517,19 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
       }else if( action.equals( "updateView" )){
         if( args.getString(0).equals("TBPublisher") && myPublisher != null && sessionConnected ){
           Log.i( TAG, "updating view for publisher" );
-          myPublisher.setPropertyFromArray(args);
-          cordova.getActivity().runOnUiThread(myPublisher);
-        }else{
+          //myPublisher.setPropertyFromArray(args);
+          //cordova.getActivity().runOnUiThread(myPublisher);
+          final JSONArray arg = args;
+
+        cordova.getThreadPool().execute(new Runnable() {
+          public void run() {
+             myPublisher.setPropertyFromArray(arg);
+             cordova.getActivity().runOnUiThread(myPublisher);
+           }
+         });
+
+        }
+        else{
           RunnableSubscriber runsub = subscriberCollection.get( args.getString(0) );
           if( runsub != null ){
             runsub.setPropertyFromArray( args );
