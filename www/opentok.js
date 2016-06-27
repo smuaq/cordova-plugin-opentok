@@ -206,8 +206,10 @@ replaceWithVideoStream = function (divName, streamId, properties) {
     element = document.getElementById(divName);
     element.setAttribute("class", "OT_root " + typeClass);
     element.setAttribute("data-streamid", streamId);
-    element.style.width = properties.width + "px";
-    element.style.height = properties.height + "px";
+    // element.style.width = properties.width + "px";
+    // element.style.height = properties.height + "px";
+    element.style.width = "100%";
+    element.style.height = "100%";
     element.style.overflow = "hidden";
     //element.style['background-color'] = "#000000";
     streamElements[streamId] = element;
