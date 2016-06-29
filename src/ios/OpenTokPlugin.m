@@ -69,6 +69,7 @@
 // Called by TB.initPublisher()
 - (void)initPublisher:(CDVInvokedUrlCommand *)command{
     NSLog(@"initPublisher...");
+    [self.commandDelegate runInBackground:^{
     BOOL bpubAudio = YES;
     BOOL bpubVideo = YES;
 
@@ -94,6 +95,8 @@
     [_publisher setPublishAudio:bpubAudio];
     [_publisher setPublishVideo:bpubVideo];
     // TODO make configurable
+
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
     [self.webView.superview insertSubview:_publisher.view belowSubview:self.webView];
     //    [self.webView.superview addSubview:_publisher.view];
     [_publisher.view setFrame:CGRectMake(left, top, width, height)];
@@ -106,10 +109,17 @@
     }
 
     NSLog(@"initPublisher done");
+
     // Return to Javascript
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }];
+    }];
+
+
 }
+
+
 // Helper function to update Views
 - (void)updateView:(CDVInvokedUrlCommand*)command{
     NSString* callback = command.callbackId;
