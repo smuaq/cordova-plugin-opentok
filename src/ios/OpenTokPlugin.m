@@ -413,6 +413,18 @@
     [self triggerJSEvent: @"sessionEvents" withType: @"subscribedToStream" withData: eventData];
 }
 
+- (void)subscriberVideoDisabled:(OTSubscriber *)subscriber
+                         reason:(OTSubscriberVideoEventReason)reason
+{
+    NSLog(@"Subscriber Video Disabled");
+}
+
+- (void)subscriberVideoEnabled:(OTSubscriber *)subscriber
+                        reason:(OTSubscriberVideoEventReason)reason
+{
+    NSLog(@"Subscriber Video Enabled");
+}
+
 
 #pragma mark Session Delegates
 - (void)sessionDidConnect:(OTSession*)session{
@@ -536,7 +548,6 @@
         [self triggerJSEvent: @"sessionEvents" withType: @"signalReceived" withData: data];
     }
 }
-
 
 #pragma mark Publisher Delegates
 - (void)publisher:(OTPublisherKit *)publisher streamCreated:(OTStream *)stream{
