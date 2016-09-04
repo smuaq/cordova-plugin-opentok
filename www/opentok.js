@@ -228,8 +228,9 @@ replaceWithVideoStream = function (divName, streamId, properties) {
     return element;
 };
 
-TBError = function (error) {
-    return navigator.notification.alert(error);
+TBError = function(error) {
+  //return navigator.notification.alert(error);
+  return console.log(error);
 };
 
 TBSuccess = function () {
