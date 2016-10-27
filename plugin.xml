@@ -30,11 +30,11 @@
       </config-file>
 
       <!-- copy opentok sdk -->
-      <source-file src="src/android/libs/opentok-android-sdk-2.9.0.aar" target-dir="libs/" />
-      <!--<source-file src="src/android/libs/opentok-android-sdk-2.7.0.jar" target-dir="libs/" />-->
-      <!--<source-file src="src/android/libs/armeabi/libopentok.so" target-dir="libs/armeabi" />-->
-      <!--<source-file src="src/android/libs/armeabi-v7a/libopentok.so" target-dir="libs/armeabi-v7a" />-->
-      <!--<source-file src="src/android/libs/x86/libopentok.so" target-dir="libs/x86" />-->
+      <source-file src="src/android/libs/opentok-android-sdk-2.9.0.jar" target-dir="libs/" />
+      <source-file src="src/android/libs/armeabi/libopentok.so" target-dir="libs/armeabi" />
+      <source-file src="src/android/libs/armeabi-v7a/libopentok.so" target-dir="libs/armeabi-v7a" />
+      <source-file src="src/android/libs/arm64-v8a/libopentok.so" target-dir="libs/arm64-v8a" />
+      <source-file src="src/android/libs/x86/libopentok.so" target-dir="libs/x86" />
 
       <config-file target="config.xml" parent="/*">
         <feature name="OpenTokPlugin">
