@@ -27,7 +27,7 @@
     // TODO this should be configurable, whether to put native views behind or in front of webview
     self.webView.opaque = NO;
     self.webView.backgroundColor = [UIColor clearColor];
-    self.webView.layer.zPosition = 10;
+    //self.webView.layer.zPosition = 10;
 }
 - (void)addEvent:(CDVInvokedUrlCommand*)command{
     NSString* event = [command.arguments objectAtIndex:0];
