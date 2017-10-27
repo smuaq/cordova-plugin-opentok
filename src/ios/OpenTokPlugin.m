@@ -413,16 +413,23 @@
     [self triggerJSEvent: @"sessionEvents" withType: @"subscribedToStream" withData: eventData];
 }
 
+
 - (void)subscriberVideoDisabled:(OTSubscriber *)subscriber
                          reason:(OTSubscriberVideoEventReason)reason
 {
     NSLog(@"Subscriber Video Disabled");
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
+    [data setObject: @"false" forKey: @"isVideoPlaying"];
+    [self triggerJSEvent: @"sessionEvents" withType: @"isVideoShown" withData: data];
 }
 
 - (void)subscriberVideoEnabled:(OTSubscriber *)subscriber
                         reason:(OTSubscriberVideoEventReason)reason
 {
     NSLog(@"Subscriber Video Enabled");
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
+    [data setObject: @"true" forKey: @"isVideoPlaying"];
+    [self triggerJSEvent: @"sessionEvents" withType: @"isVideoShown" withData: data];
 }
 
 

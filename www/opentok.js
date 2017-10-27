@@ -229,8 +229,8 @@ replaceWithVideoStream = function (divName, streamId, properties) {
 };
 
 TBError = function(error) {
-  //return navigator.notification.alert(error);
-  return console.log(error);
+    //return navigator.notification.alert(error);
+    return console.log(error);
 };
 
 TBSuccess = function () {
@@ -766,6 +766,13 @@ TBSession = (function () {
         } else {
             callbackFunc();
         }
+    };
+
+    TBSession.prototype.isVideoShown = function (event) {
+        pdebug("isVideoShown event", event);
+
+        this.trigger("isVideoShown", event);
+        return this.trigger("isVideoShown:" + event, event);
     };
 
     TBSession.prototype.signalReceived = function (event) {
