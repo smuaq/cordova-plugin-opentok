@@ -418,8 +418,10 @@
                          reason:(OTSubscriberVideoEventReason)reason
 {
     NSLog(@"Subscriber Video Disabled");
+    NSString* reasonString = [NSString stringWithFormat:@"%d", reason];
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     [data setObject: @"false" forKey: @"isVideoPlaying"];
+    [data setObject: reasonString forKey: @"reason"];
     [self triggerJSEvent: @"sessionEvents" withType: @"isVideoShown" withData: data];
 }
 
@@ -427,8 +429,10 @@
                         reason:(OTSubscriberVideoEventReason)reason
 {
     NSLog(@"Subscriber Video Enabled");
+    NSString* reasonString = [NSString stringWithFormat:@"%d", reason];
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     [data setObject: @"true" forKey: @"isVideoPlaying"];
+    [data setObject: reasonString forKey: @"reason"];
     [self triggerJSEvent: @"sessionEvents" withType: @"isVideoShown" withData: data];
 }
 

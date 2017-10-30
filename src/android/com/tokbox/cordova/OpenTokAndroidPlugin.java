@@ -351,6 +351,15 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
     Log.i(TAG, "Subscriber Video Disabled");
     try{
         data.put("isVideoPlaying", "false");
+        if (arg1.equals("publishVideo")){
+          data.put("reason", "1");
+        }
+        else if(arg1.equals("quality")){
+          data.put("reason", "3");
+        }
+        else {
+          data.put("reason", "2");
+        }
         triggerJSEvent( "sessionEvents", "isVideoShown", data);
     }catch (JSONException e) {}
 
@@ -362,6 +371,15 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
     Log.i(TAG, "Subscriber Video Enabled");
     try{
       data.put("isVideoPlaying", "true");
+      if (arg1.equals("publishVideo")){
+        data.put("reason", "1");
+      }
+      else if(arg1.equals("quality")){
+        data.put("reason", "3");
+      }
+      else {
+        data.put("reason", "2");
+      }
       triggerJSEvent( "sessionEvents", "isVideoShown", data);
     }catch (JSONException e) {}
 
