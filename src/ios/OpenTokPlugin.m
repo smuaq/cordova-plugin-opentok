@@ -413,6 +413,17 @@
     [self triggerJSEvent: @"sessionEvents" withType: @"subscribedToStream" withData: eventData];
 }
 
+- (void)subscriberVideoDisableWarning:(OTSubscriberKit *)subscriber {
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
+    [data setObject: @"true" forKey: @"videoDisableWarning"];
+    [self triggerJSEvent: @"sessionEvents" withType: @"videoDisableWarning" withData: data];
+}
+
+- (void)subscriberVideoDisableWarningLifted:(OTSubscriberKit *)subscriber {
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
+    [data setObject: @"true" forKey: @"videoDisableWarningLifted"];
+    [self triggerJSEvent: @"sessionEvents" withType: @"videoDisableWarningLifted" withData: data];
+}
 
 - (void)subscriberVideoDisabled:(OTSubscriber *)subscriber
                          reason:(OTSubscriberVideoEventReason)reason

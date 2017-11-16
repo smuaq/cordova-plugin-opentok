@@ -775,6 +775,20 @@ TBSession = (function () {
         return this.trigger("isVideoShown:" + event, event);
     };
 
+    TBSession.prototype.videoDisableWarning = function (event) {
+        pdebug("videoDisableWarning event", event);
+
+        this.trigger("videoDisableWarning", event);
+        return this.trigger("videoDisableWarning:" + event, event);
+    };
+
+    TBSession.prototype.videoDisableWarningLifted = function (event) {
+        pdebug("videoDisableWarningLifted event", event);
+
+        this.trigger("videoDisableWarningLifted", event);
+        return this.trigger("videoDisableWarningLifted:" + event, event);
+    };
+
     TBSession.prototype.signalReceived = function (event) {
         var streamEvent;
         pdebug("signalReceived event", event);

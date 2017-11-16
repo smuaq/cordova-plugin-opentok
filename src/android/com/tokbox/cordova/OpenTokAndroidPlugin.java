@@ -335,14 +335,22 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
 
   @Override
   public void onVideoDisableWarning(SubscriberKit arg0) {
-    // TODO Auto-generated method stub
-
+    JSONObject data= new JSONObject();
+        Log.i(TAG, "Subscriber Video Disable Warning");
+        try{
+            data.put("videoDisableWarning", "true");
+            triggerJSEvent( "sessionEvents", "videoDisableWarning", data);
+        }catch (JSONException e) {}
   }
 
   @Override
   public void onVideoDisableWarningLifted(SubscriberKit arg0) {
-    // TODO Auto-generated method stub
-
+    JSONObject data= new JSONObject();
+            Log.i(TAG, "Subscriber Video Disable Warning Lifted");
+            try{
+                data.put("videoDisableWarningLifted", "true");
+                triggerJSEvent( "sessionEvents", "videoDisableWarningLifted", data);
+            }catch (JSONException e) {}
   }
 
   @Override
