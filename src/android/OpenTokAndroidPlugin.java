@@ -190,9 +190,14 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
           publisherName = "Android-Publisher";
         }
 
-        mPublisher = new Publisher(cordova.getActivity().getApplicationContext(), publisherName);
-        mPublisher.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
+        // Added new builder for publisher & video resolution/fps
+        mPublisher = new Publisher.Builder(cordova.getActivity().getApplicationContext())
+                                        .name(publisherName)
+                                        .frameRate(Publisher.CameraCaptureFrameRate.FPS_30)
+                                        .resolution(Publisher.CameraCaptureResolution.HIGH)
+                                        .build();
 
+        mPublisher.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
         mPublisher.setCameraListener(this);
         mPublisher.setPublisherListener(this);
         try{
