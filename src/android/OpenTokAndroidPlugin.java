@@ -67,9 +67,14 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
 
     public class CustomComparator implements Comparator<RunnableUpdateViews> {
       @Override
-        public int compare(RunnableUpdateViews object1, RunnableUpdateViews object2) {
-          return object2.getZIndex() - object1.getZIndex();
-        }
+      public int compare(RunnableUpdateViews object1, RunnableUpdateViews object2) {
+          // truly weird hack to fix z ordering being inverted on Android 26+ ?
+          if (android.os.Build.VERSION.SDK_INT > 25) {
+              return object1.getZIndex() - object2.getZIndex();
+          } else {
+              return object2.getZIndex() - object1.getZIndex();
+          }
+      }
     }
 
     public void updateZIndices(){
