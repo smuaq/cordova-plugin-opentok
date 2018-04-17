@@ -10,14 +10,9 @@
     <keywords>opentok,tokbox</keywords>
 
     <platform name="android">
-
-      <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
-      <resource-file src="src/android/libs/opentok-android-sdk-2.12.0.aar" target="libs/opentok-android-sdk-2.12.0.aar" />
-
+      <framework src="build-extras.gradle" custom="true" type="gradleReference" />
       <asset src="www/opentok.js" target="opentok.js" />
-
-      <source-file src="src/android/com/tokbox/cordova/OpenTokAndroidPlugin.java"
-        target-dir="src/com/tokbox/cordova/" />
+      <source-file src="src/android/OpenTokAndroidPlugin.java" target-dir="src/com/tokbox/cordova/" />
 
       <config-file target="AndroidManifest.xml" parent="/manifest">
         <uses-permission android:name="android.permission.CAMERA" />
@@ -26,19 +21,11 @@
         <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
         <uses-permission android:name="android.permission.BLUETOOTH" />
         <uses-permission android:name="android.permission.BROADCAST_STICKY" />
-
         <uses-permission android:name="android.permission.WAKE_LOCK" />
         <uses-feature android:name="android.hardware.camera" android:required="true" />
         <uses-feature android:name="android.hardware.microphone" android:required="true" />
         <uses-feature android:name="android.hardware.camera.autofocus" android:required="true" />
       </config-file>
-
-      <!-- copy opentok sdk  (deprecated - using .aar file for new versions)-->
-      <!--<source-file src="src/android/libs/opentok-android-sdk-2.9.0.jar" target-dir="libs/" />-->
-      <!--<source-file src="src/android/libs/armeabi/libopentok.so" target-dir="libs/armeabi" />-->
-      <!--<source-file src="src/android/libs/armeabi-v7a/libopentok.so" target-dir="libs/armeabi-v7a" />-->
-      <!--<source-file src="src/android/libs/arm64-v8a/libopentok.so" target-dir="libs/arm64-v8a" />-->
-      <!--<source-file src="src/android/libs/x86/libopentok.so" target-dir="libs/x86" />-->
 
       <config-file target="config.xml" parent="/*">
         <feature name="OpenTokPlugin">
