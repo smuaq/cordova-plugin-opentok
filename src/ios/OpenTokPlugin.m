@@ -90,8 +90,13 @@
         bpubVideo = NO;
     }
 
+    // Added video resolution/fps
+    OTPublisherSettings *_publisherSettings = [[OTPublisherSettings alloc] init];
+    _publisherSettings.cameraResolution = OTCameraCaptureResolutionHigh;
+    _publisherSettings.cameraFrameRate = OTCameraCaptureFrameRate30FPS;
+
     // Publish and set View
-    _publisher = [[OTPublisher alloc] initWithDelegate:self name:name];
+    _publisher = [[OTPublisher alloc] initWithDelegate:self settings:_publisherSettings];
     [_publisher setPublishAudio:bpubAudio];
     [_publisher setPublishVideo:bpubVideo];
     // TODO make configurable
