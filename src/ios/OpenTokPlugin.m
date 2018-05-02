@@ -104,9 +104,9 @@
     [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
     [self.webView.superview insertSubview:_publisher.view belowSubview:self.webView];
     //    [self.webView.superview addSubview:_publisher.view];
-    [_publisher.view setFrame:CGRectMake(left, top, width, height)];
+    [_publisher.view setFrame:CGRectMake(left, top+20, width, height)];
     if (zIndex>0) {
-        _publisher.view.layer.zPosition = 1;
+        _publisher.view.layer.zPosition = 0;
     }
     NSString* cameraPosition = [command.arguments objectAtIndex:8];
     if ([cameraPosition isEqualToString:@"back"]) {
@@ -136,8 +136,8 @@
     int zIndex = [[command.arguments objectAtIndex:5] intValue];
     if ([sid isEqualToString:@"TBPublisher"]) {
         NSLog(@"The Width is: %d", width);
-        _publisher.view.frame = CGRectMake(left, top, width, height);
-        _publisher.view.layer.zPosition = 1;
+        _publisher.view.frame = CGRectMake(left, top+20, width, height);
+        _publisher.view.layer.zPosition = 0;
     }
 
     // Pulls the subscriber object from dictionary to prepare it for update
