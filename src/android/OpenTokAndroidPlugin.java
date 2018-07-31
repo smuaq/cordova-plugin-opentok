@@ -15,6 +15,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.Manifest;
+import android.os.Build;
+import android.content.pm.PackageManager;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -57,6 +60,9 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
   static JSONObject viewList = new JSONObject();
   static CordovaInterface _cordova;
   static CordovaWebView _webView;
+
+  public static final String[] perms = {Manifest.permission.INTERNET, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
+  public CallbackContext permissionsCallback;
 
 
   public class RunnableUpdateViews implements Runnable{
@@ -539,9 +545,14 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
       }else if( action.equals( "disconnect" )){
         mSession.disconnect();
       }else if( action.equals( "publish" )){
-        if( sessionConnected ){
-          Log.i( TAG, "publisher is publishing" );
-          myPublisher.startPublishing();
+        if (sessionConnected) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                cordova.requestPermissions(this, 0, perms);
+                permissionsCallback = callbackContext;
+            } else {
+                myPublisher.startPublishing();
+                Log.i(TAG, "publisher is publishing");
+            }
         }
       }else if( action.equals( "signal" )){
         Connection c = connectionCollection.get(args.getString(2));
@@ -587,6 +598,23 @@ public class OpenTokAndroidPlugin extends CordovaPlugin implements
       }
       return true;
     }
+
+    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] results) throws JSONException {
+            Boolean permissionError = false;
+            for (int permissionResult : results) {
+                if (permissionResult == PackageManager.PERMISSION_DENIED) {
+                    permissionError = true;
+                }
+            }
+            if (permissionError) {
+                PluginResult callback = new PluginResult(PluginResult.Status.ERROR, "permission denied");
+                callback.setKeepCallback(false);
+                permissionsCallback.sendPluginResult(callback);
+            } else {
+                myPublisher.startPublishing();
+                Log.i(TAG, "permission granted-publisher is publishing");
+            }
+        }
 
   public void alertUser( String message){
     // 1. Instantiate an AlertDialog.Builder with its constructor
