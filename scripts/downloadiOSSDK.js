@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 module.exports = function (context) {
-    var IosSDKVersion = 'OpenTok-iOS-2.14.1';
+    var IosSDKVersion = 'OpenTok-iOS-2.15.2';
     var fs = require('fs');
     var downloadFile = require('./downloadFile.js'),
         exec = require('./exec/exec.js'),
