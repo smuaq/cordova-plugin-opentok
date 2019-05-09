@@ -69,7 +69,7 @@
 // Called by TB.initPublisher()
 - (void)initPublisher:(CDVInvokedUrlCommand *)command{
     NSLog(@"initPublisher...");
-    (*[self.commandDelegate runInBackground:^{*)
+    // [self.commandDelegate runInBackground:^{
     BOOL bpubAudio = YES;
     BOOL bpubVideo = YES;
 
@@ -119,7 +119,7 @@
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }];
-    (*}];*)
+    // }];
 
 
 }
